@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 export default {
     data() {
         return {
@@ -35,30 +34,21 @@ export default {
             };
         },
     methods: {
-        handleLogin() {
-            axios
-                .post('http://localhost:8888/api/private/v1/login',this.formData)
-                .then((response) => {
-                    var status = response.data.meta.status;
-                    var msg = response.data.meta.msg;
-                    if (status === 200) {
-                        // 登陆成功
-                        this.$message.success(msg);
-                        var token = response.data.data.token;
-                        sessionStorage.setItem('token',token);
-                        this.$router.push('/');
-                    } else {
-                        // 登录失败
-                        this.$message.error(msg);
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                })
+        async handleLogin() {
+            var response = await this.$http.post
+           ('login',this.formData);
+           var { data: {meta: { status, msg}}} = response;
+           if (status === 200) {
+               var token = response.data.data.token;
+                sessionStorage.setItem('token',token);
+                 this.$message.success(msg);
+                 this.$router.push('/');
+           }else {
+               this.$message.error(msg);
+           }
         }
     }
-    
-    }
+}
 </script>
 // scoped是html5中的属性， 会给当前页面所有的标签添加一个data-v-xxx属性作为标识
 // 当前页面样式职位当前页面的元素服务
